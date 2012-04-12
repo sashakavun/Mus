@@ -15,9 +15,10 @@ Usage:
     Mus.dom('script.template');
     Mus.dom($('.templates > script'));
 
-    // Apply template and data to DOM element by passing
+    // Render template with data to DOM element by passing
     // jQuery element selector (or jQuery set of elements),
     // template name and data. If template wasn't found,
     // it will be lazy-loaded via ajax (if configured to do that)
-    Mus.apply('div.target', 'user', { attribution: 'Mrs.', name: 'Mary Doe' });
+    Mus.render('div.target', 'user', { attribution: 'Mrs.', name: 'Ashley Doe' });
     $('div.target').mus('user', { attribution: 'Mrs.', name: 'Mary Doe' });
+    $('div.target').mus('user', { attribution: 'Ms.', name: 'Polly Doe' }, '/template.js?name={{name}}');

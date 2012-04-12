@@ -1,5 +1,5 @@
 /**
- * Mus v1.0
+ * Mus v1.0.1
  * The Mustache.js wrapper
  * http://github.com/keta/mus
  *
@@ -19,7 +19,7 @@
 	// {{mustache}} //
 
 	var mus = '_', // Property name to mark compiled template properties
-		selector = 'script[type = "text/x-mus"]'; // Selector to filter templates in DOM
+		selector = 'script[type="text/x-mus"]'; // Selector to filter templates in DOM
 
 	/**
 	 * Main Mus object
@@ -50,6 +50,11 @@
 			prefix: 'tpl'
 		},
 
+		/**
+		 * Clears compiled-in templates
+		 *
+		 * @return {void}
+		 */
 		clear: function()
 		{
 			for (var name in Mus)
@@ -61,12 +66,23 @@
 			}
 		},
 
+		/**
+		 * Compiles template in
+		 *
+		 * @param {String} name      Template name
+		 * @param {String} template  Template contents
+		 * @param {Object} [options] Custom options for generated template
+		 *
+		 * @throws {Error} When name inherits protected properties
+		 *
+		 * @return {Function} Callable template processing function
+		 */
 		set: function(name, template, options)
 		{
 			// Check for protected names
 			if (Mus.hasOwnProperty(name) && !Mus[name].hasOwnProperty(mus))
 			{
-				throw new Error('Illegal template name: ' + name);
+				throw new Error('Mus.set: "' + name + '" is incorrect template name.');
 			}
 
 			// Compile template
@@ -77,13 +93,23 @@
 			return Mus[name];
 		},
 
+		/**
+		 * Compiles template in from DOM elements
+		 *
+		 * @param {String|HTMLElement} el        HTML element, jQuery query or elements set
+		 * @param {Object}             [options] Custom options for generated templates
+		 *
+		 * @throws {Error} When el is empty
+		 *
+		 * @return {void}
+		 */
 		dom: function(el, options)
 		{
 			// Try to find element
 			var _el = $(el);
 			if (!_el.length)
 			{
-				throw new Error('Template not found in DOM: ' + el);
+				throw new Error('Mus.dom: template "' + el + '" not found.');
 			}
 
 			// Compile prefix regex
@@ -112,44 +138,71 @@
 			});
 		},
 
-		apply: function(el, name, data)
+		/**
+		 * Renders template into the given element
+		 *
+		 * @param {String|HTMLElement} el        HTML element, jQuery query or elements set
+		 * @param {String}             name      Template name
+		 * @param {Object}             [data]    Data to pass to the template renderer
+		 * @param {String}             [url]     Template loading url (overriding one from options)
+		 *
+		 * @throws {Error} When target element not found, or name isn't String, or when template not found and autoloading isn't properly configured
+		 *
+		 * @return {Boolean} True if template succesfully rendered, False if rendering is deferred
+		 */
+		render: function(el, name, data, url)
 		{
+			var _el = $(el);
+			data = data || {};
+
+			// Check mandatory arguments
+			if (_el.length)
+			{
+				throw new Error('Mus.render: target element not found.');
+			}
+			else if (typeof(name) !== 'string')
+			{
+				throw new Error('Mus.render: "' + name + '" is incorrect template name.');
+			}
+
 			if (!Mus.hasOwnProperty(name))
 			{
-				// Mus have no such template, and autoload isn't configured, throw an error
-				if (!Mus.options.url)
+				url = url || Mus.options.url;
+
+				// There are no such template, but autoload isn't configured or url isn't passed, so throw an error
+				if (!url)
 				{
-					throw new Error('Unknown template: ' + name + ' (autoload disabled)');
+					throw new Error('Mus.render: template not found: ' + name + ' (autoload disabled).');
 				}
 
 				// Local data storage for callback function
 				var render = {
 					name: name,
-					el: el,
+					el: _el,
 					data: data
 				};
 
 				// Make ajax request
 				$.ajax({
 					accepts: 'text/x-mus',
-					url: Mustache.render(Mus.options.url, { name: name})
-				}).success((function(data) {
+					url: Mustache.render(url, { name: name })
+				}).success((function(data)
+				{
 					// Pass local data storage to the callback function
-					return function(tpl) {
+					return function(tpl)
+					{
 						// Compile template
 						Mus.set(data.name, tpl);
 
 						// Apply html to the target element
-						$(data.el).html(Mus[data.name](data.data));
+						data.el.html(Mus[data.name](data.data));
 					}
 				})(render));
 			}
 			else if (Mus[name].hasOwnProperty(mus))
 			{
 				// Template already exists, apply html
-				$(el).html(Mus[name](data));
-
-				// Return true
+				_el.html(Mus[name](data));
 				return true;
 			}
 
@@ -165,15 +218,16 @@
 	/**
 	 * jQuery shortcut for using via $(el).mus(templateName, data)
 	 *
-	 * @param {String} template Template name
-	 * @param {Object} data     Data to pass to the template renderer
+	 * @param {String}             name      Template name
+	 * @param {Object}             [data]    Data to pass to the template renderer
+	 * @param {String}             [url]     Template loading url (overriding one from options)
 	 *
 	 * @return this
 	 */
-	$.fn.mus = function(template, data)
+	$.fn.mus = function(name, data, url)
 	{
-		// Apply template
-		Mus.apply(this, template, data);
+		// Render template
+		Mus.render(this, name, data, url);
 
 		// Maintain chainability
 		return this;
