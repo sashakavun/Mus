@@ -677,10 +677,10 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 		/**
 		 * Renders template into the given element
 		 *
-		 * @param {String|HTMLElement} el        HTML element, jQuery query or elements set
-		 * @param {String}             name      Template name
-		 * @param {Object}             [data]    Data to pass to the template renderer
-		 * @param {String}             [url]     Template loading url (overriding one from options)
+		 * @param {String|HTMLElement} el     HTML element, jQuery query or elements set
+		 * @param {String}             name   Template name
+		 * @param {Object}             [data] Data to pass to the template renderer
+		 * @param {String}             [url]  Template loading url (overriding one from options)
 		 *
 		 * @throws {Error} When target element not found, or name isn't String, or when template not found and autoloading isn't properly configured
 		 *
@@ -754,9 +754,9 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 	/**
 	 * jQuery shortcut for using via $(el).mus(templateName, data)
 	 *
-	 * @param {String}             name      Template name
-	 * @param {Object}             [data]    Data to pass to the template renderer
-	 * @param {String}             [url]     Template loading url (overriding one from options)
+	 * @param {String} name   Template name
+	 * @param {Object} [data] Data to pass to the template renderer
+	 * @param {String} [url]  Template loading url (overriding one from options)
 	 *
 	 * @return this
 	 */
