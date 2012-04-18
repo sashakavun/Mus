@@ -692,7 +692,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 			data = data || {};
 
 			// Check mandatory arguments
-			if (_el.length)
+			if (!_el.length)
 			{
 				throw new Error('Mus.render: target element not found.');
 			}
