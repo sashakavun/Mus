@@ -1,5 +1,5 @@
 /**
- * Mus v1.0.1
+ * Mus v1.0.2
  * The Mustache.js wrapper
  * http://github.com/keta/mus
  *
@@ -641,18 +641,11 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 		 */
 		dom: function(el, options)
 		{
-			// Try to find element
-			var _el = $(el);
-			if (!_el.length)
-			{
-				throw new Error('Mus.dom: template "' + el + '" not found.');
-			}
-
 			// Compile prefix regex
 			var rx = Mus.options.prefix ? new RegExp('^' + Mus.options.prefix) : null;
 
 			// Add each template
-			_el.filter(selector).each(function(i, el){
+			$(el).filter(selector).each(function(i, el){
 				var $el = $(el),
 					id = $el.attr('id'),
 					tpl = $el.text().trim();
@@ -774,7 +767,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 	 */
 	$(document).ready(function() {
 		// Run Mus.dom against selected set
-		Mus.dom($(selector));
+		Mus.dom(selector);
 	});
 
 })(window, document, jQuery);
