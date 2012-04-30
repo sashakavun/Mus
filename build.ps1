@@ -1,4 +1,3 @@
-
 # Mus builder for Windows systems
 #
 # Copyright 2012, Aleksandr "keta" Kavun
